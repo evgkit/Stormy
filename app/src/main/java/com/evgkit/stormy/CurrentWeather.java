@@ -8,12 +8,26 @@ import java.util.TimeZone;
 public class CurrentWeather {
     private String locationLabel;
     private String icon;
-    private Long time;
-    private Double temperature;
-    private Double humidity;
-    private Double precipChance;
+    private long time;
+    private double temperature;
+    private double humidity;
+    private double precipChance;
     private String summary;
     private String timezone;
+
+    public CurrentWeather() {
+    }
+
+    public CurrentWeather(String locationLabel, String icon, Long time, Double temperature, Double humidity, Double precipChance, String summary, String timezone) {
+        this.locationLabel = locationLabel;
+        this.icon = icon;
+        this.time = time;
+        this.temperature = temperature;
+        this.humidity = humidity;
+        this.precipChance = precipChance;
+        this.summary = summary;
+        this.timezone = timezone;
+    }
 
     public String getLocationLabel() {
         return locationLabel;
@@ -43,7 +57,7 @@ public class CurrentWeather {
         this.icon = icon;
     }
 
-    public Long getTime() {
+    public long getTime() {
         return time;
     }
 
@@ -53,31 +67,31 @@ public class CurrentWeather {
         return formatter.format(new Date(time * 1000));
     }
 
-    public void setTime(Long time) {
+    public void setTime(long time) {
         this.time = time;
     }
 
-    public Double getTemperature() {
+    public double getTemperature() {
         return temperature;
     }
 
-    public void setTemperature(Double temperature) {
+    public void setTemperature(double temperature) {
         this.temperature = temperature;
     }
 
-    public Double getHumidity() {
+    public double getHumidity() {
         return humidity;
     }
 
-    public void setHumidity(Double humidity) {
+    public void setHumidity(double humidity) {
         this.humidity = humidity;
     }
 
-    public Double getPrecipChance() {
+    public double getPrecipChance() {
         return precipChance;
     }
 
-    public void setPrecipChance(Double precipChance) {
+    public void setPrecipChance(double precipChance) {
         this.precipChance = precipChance;
     }
 
@@ -95,5 +109,19 @@ public class CurrentWeather {
 
     public void setTimezone(String timezone) {
         this.timezone = timezone;
+    }
+
+    @Override
+    public String toString() {
+        return "CurrentWeather{" +
+                "locationLabel='" + locationLabel + '\'' +
+                ", icon='" + icon + '\'' +
+                ", time=" + time +
+                ", temperature=" + temperature +
+                ", humidity=" + humidity +
+                ", precipChance=" + precipChance +
+                ", summary='" + summary + '\'' +
+                ", timezone='" + timezone + '\'' +
+                '}';
     }
 }

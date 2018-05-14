@@ -1,6 +1,7 @@
 package com.evgkit.stormy;
 
 import android.content.Context;
+import android.databinding.DataBindingUtil;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
@@ -8,7 +9,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.evgkit.stormy.databinding.ActivityMainBinding;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,32 +31,38 @@ import okhttp3.ResponseBody;
 
 public class MainActivity extends AppCompatActivity {
     public static final String TAG = MainActivity.class.getSimpleName();
+    public static final String API_KEY = "111b4406c7757474f9e4ba2bee689f93";
+    public static final double LATITUDE = 59.9059;
+    public static final double LONGITUDE = 30.5130;
 
     private final OkHttpClient client = new OkHttpClient();
 
     private CurrentWeather currentWeather;
 
+    private ImageView iconImageView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        getForecast();
+    }
 
-        TextView darkSkyLabel = findViewById(R.id.darkSkyAttribution);
-        darkSkyLabel.setMovementMethod(LinkMovementMethod.getInstance());
+    private void getForecast() {
+        final ActivityMainBinding binding = DataBindingUtil.setContentView(MainActivity.this,
+                R.layout.activity_main);
 
         if (!isNetworkAvailable()) {
             alertUserAboutError();
             return;
         }
 
-        String apiKey = "111b4406c7757474f9e4ba2bee689f93";
-        Double latitude = 59.9059;
-        Double longitude = 30.5130;
+        TextView darkSkyLabel = findViewById(R.id.darkSkyAttribution);
+        darkSkyLabel.setMovementMethod(LinkMovementMethod.getInstance());
 
         String forecastURL = String.format(
                 Locale.US,
                 "https://api.darksky.net/forecast/%s/%f,%f",
-                apiKey, latitude, longitude
+                API_KEY, LATITUDE, LONGITUDE
         );
 
         Request request = new Request.Builder()
@@ -75,6 +87,21 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     currentWeather = getCurrentDetails(responseBody.string());
+                    Log.v(TAG, currentWeather.toString());
+                    binding.setWeather(new CurrentWeather(
+                            currentWeather.getLocationLabel(),
+                            currentWeather.getIcon(),
+                            currentWeather.getTime(),
+                            currentWeather.getTemperature(),
+                            currentWeather.getHumidity(),
+                            currentWeather.getPrecipChance(),
+                            currentWeather.getSummary(),
+                            currentWeather.getTimezone()
+                    ));
+
+                    iconImageView = findViewById(R.id.iconImageView);
+                    iconImageView.setImageDrawable(getResources().getDrawable(currentWeather.getIconId()));
+
                 } catch (IOException e) {
                     alertUserAboutError();
                 }
@@ -117,5 +144,10 @@ public class MainActivity extends AppCompatActivity {
     private void alertUserAboutError() {
         AlertDialogFragment alertDialogFragment = new AlertDialogFragment();
         alertDialogFragment.show(getFragmentManager(), "error_dialog");
+    }
+
+    public void refreshOnClick(View view) {
+        Toast.makeText(this, "Refreshing...", Toast.LENGTH_LONG).show();
+        getForecast();
     }
 }
