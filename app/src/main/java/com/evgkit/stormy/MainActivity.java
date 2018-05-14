@@ -61,14 +61,15 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 try (ResponseBody responseBody = response.body()) {
-                    if (!response.isSuccessful())
+                    if (!response.isSuccessful()) {
                         throw new IOException("Unexpected code " + response);
-
-                    if (responseBody != null) {
-                        currentWeather = getCurrentDetails(responseBody.string());
-                    } else {
-                        alertUserAboutError();
                     }
+
+                    if (responseBody == null) {
+                        throw new IOException("Empty response body");
+                    }
+
+                    currentWeather = getCurrentDetails(responseBody.string());
                 } catch (IOException e) {
                     alertUserAboutError();
                 }
@@ -80,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             JSONObject jsonObject = new JSONObject(jsonAsString);
             CurrentWeather currentWeather = new CurrentWeather();
+
             currentWeather.setHumidity(jsonObject.getJSONObject("currently").getDouble("humidity"));
             currentWeather.setIcon(jsonObject.getJSONObject("currently").getString("icon"));
             currentWeather.setLocationLabel("CouldRaw Country");
@@ -87,6 +89,11 @@ public class MainActivity extends AppCompatActivity {
             currentWeather.setSummary(jsonObject.getJSONObject("currently").getString("summary"));
             currentWeather.setTime(jsonObject.getJSONObject("currently").getLong("time"));
             currentWeather.setTemperature(jsonObject.getJSONObject("currently").getDouble("temperature"));
+            currentWeather.setTimezone(jsonObject.getString("timezone"));
+
+            Log.d(TAG, currentWeather.getFormattedTime());
+            Log.d(TAG, currentWeather.getIconId().toString());
+
             return currentWeather;
         } catch (JSONException e) {
             throw new IOException(e.getMessage());

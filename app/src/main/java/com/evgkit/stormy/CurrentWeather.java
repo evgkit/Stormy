@@ -1,5 +1,10 @@
 package com.evgkit.stormy;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+
 public class CurrentWeather {
     private String locationLabel;
     private String icon;
@@ -8,6 +13,7 @@ public class CurrentWeather {
     private Double humidity;
     private Double precipChance;
     private String summary;
+    private String timezone;
 
     public String getLocationLabel() {
         return locationLabel;
@@ -21,12 +27,30 @@ public class CurrentWeather {
         return icon;
     }
 
+    public Integer getIconId() {
+        try {
+            return R.drawable.class
+                    .getField(icon.replaceAll("-", "_"))
+                    .getInt(null);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     public void setIcon(String icon) {
         this.icon = icon;
     }
 
     public Long getTime() {
         return time;
+    }
+
+    public String getFormattedTime() {
+        SimpleDateFormat formatter = new SimpleDateFormat("h:mm a", Locale.ENGLISH);
+        formatter.setTimeZone(TimeZone.getTimeZone(timezone));
+        return formatter.format(new Date(time * 1000));
     }
 
     public void setTime(Long time) {
@@ -63,5 +87,13 @@ public class CurrentWeather {
 
     public void setSummary(String summary) {
         this.summary = summary;
+    }
+
+    public String getTimezone() {
+        return timezone;
+    }
+
+    public void setTimezone(String timezone) {
+        this.timezone = timezone;
     }
 }
